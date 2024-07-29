@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.util.StringUtils;
 
-@Slf4j
+@Slf4j(topic = "JwtUtil")
 @Component
 public class JwtUtil {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String BEARER_PREFIX = "Bearer";
+    public static final String BEARER_PREFIX = "Bearer ";
     private final long ACCESS_TOKEN_TIME = 1000L * 60 * 60;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -38,13 +38,13 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
     // 토큰 생성
-    public String createAccessToken(String email) {
+    public String createAccessToken(String username) {
         Date date = new Date();
 
         return BEARER_PREFIX +
             Jwts.builder()
-                .setSubject(email) //사용자 식별자값(ID)
-                .claim("email", email)
+                .setSubject(username) //사용자 식별자값(ID)
+                .claim("username", username)
                 .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
                 .setIssuedAt(date) // 발급일
                 .signWith(key, signatureAlgorithm) // 암호화 알고리즘
