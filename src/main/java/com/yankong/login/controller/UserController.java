@@ -8,7 +8,7 @@ import com.yankong.login.dto.request.SignupRequestDto;
 import com.yankong.login.dto.response.SignupResponseDto;
 import com.yankong.login.dto.response.UserResponseDto;
 import com.yankong.login.global.security.CustomUserDetails;
-import com.yankong.login.service.UserService;
+import com.yankong.login.user.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.nio.file.AccessDeniedException;
@@ -37,10 +37,11 @@ public class UserController {
     }
     @PostMapping("/signin")
     public ResponseEntity<SigninResponseDto> signIn(@Valid @RequestBody SigninRequestDto signinRequest) {
-        String accessToken = userService.signIn(signinRequest);
+        SigninResponseDto signinResponse = userService.signIn(signinRequest);
         return ResponseEntity.ok()
-            .header(HttpHeaders.AUTHORIZATION, accessToken)
-            .body(new SigninResponseDto(accessToken));
+            .header(HttpHeaders.AUTHORIZATION, signinResponse.getAccessToken())
+            .header("RefreshToken", signinResponse.getRefreshToken())
+            .body(signinResponse);
     }
     @GetMapping("/info")
     public ResponseEntity<UserResponseDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) throws AccessDeniedException {
