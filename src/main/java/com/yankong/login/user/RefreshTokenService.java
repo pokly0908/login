@@ -15,11 +15,12 @@ public class RefreshTokenService {
 
     public SigninResponseDto refresh(String refreshToken) {
         //1. refreshToken이 유효한지 확인
-        if(!validateToken(refreshToken)) {
+        if (!validateToken(refreshToken)) {
             throw new RuntimeException("Refresh Token이 유효하지 않습니다. 다시 로그인 해주세요");
         }
         //2. 해당 유저의 정보를 담은 accessToken을 발급
-        String accessToken = jwtUtil.createAccessToken(jwtUtil.getUserInfoFromToken(refreshToken).getSubject());
+        String accessToken = jwtUtil.createAccessToken(
+            jwtUtil.getUserInfoFromToken(refreshToken).getSubject());
         return new SigninResponseDto(accessToken, refreshToken);
     }
 

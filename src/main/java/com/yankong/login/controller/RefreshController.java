@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class RefreshController {
+
     private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
 

@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class SigninResponseDto {
+
     private String accessToken;
     private String refreshToken;
 

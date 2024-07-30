@@ -10,6 +10,7 @@ import java.util.List;
 
 @Getter
 public class SignupResponseDto {
+
     private String username;
     private String nickname;
     private List<Authority> authorities;
@@ -23,6 +24,7 @@ public class SignupResponseDto {
 
     @Getter
     public static class Authority {
+
         private String authorityName;
 
         public Authority(User user) {

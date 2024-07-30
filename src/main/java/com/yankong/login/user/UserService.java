@@ -64,13 +64,16 @@ public class UserService {
     }
 
     public UserResponseDto getUserInfo(User user) {
-        User findUser = userRepository.findByUsername(user.getUsername()).orElseThrow(IllegalArgumentException::new);
+        User findUser = userRepository.findByUsername(user.getUsername())
+            .orElseThrow(IllegalArgumentException::new);
         return new UserResponseDto(findUser);
     }
+
     @Transactional
     public void updateUserInfo(User user, UpdateRequestDto updateRequest) {
-        User findUser = userRepository.findByUsername(user.getUsername()).orElseThrow(IllegalArgumentException::new);
-        if(!passwordEncoder.matches(updateRequest.getOldPassword(), findUser.getPassword())) {
+        User findUser = userRepository.findByUsername(user.getUsername())
+            .orElseThrow(IllegalArgumentException::new);
+        if (!passwordEncoder.matches(updateRequest.getOldPassword(), findUser.getPassword())) {
             throw new IllegalArgumentException();
         }
         String encodedPassword = passwordEncoder.encode(updateRequest.getNewPassword());
@@ -78,8 +81,9 @@ public class UserService {
     }
 
     public void deleteUser(User user, DeleteRequestDto deleteRequest) {
-        User findUser = userRepository.findByUsername(user.getUsername()).orElseThrow(IllegalArgumentException::new);
-        if(!passwordEncoder.matches(deleteRequest.getPassword(), findUser.getPassword())) {
+        User findUser = userRepository.findByUsername(user.getUsername())
+            .orElseThrow(IllegalArgumentException::new);
+        if (!passwordEncoder.matches(deleteRequest.getPassword(), findUser.getPassword())) {
             throw new IllegalArgumentException();
         }
         userRepository.delete(findUser);

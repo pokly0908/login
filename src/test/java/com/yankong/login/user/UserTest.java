@@ -10,12 +10,11 @@ import com.yankong.login.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class UserTest {
 
     @Autowired
@@ -67,14 +66,12 @@ public class UserTest {
             .build();
         userService.signUp(signupRequestDto);
 
-
         // When
         SigninResponseDto user = userService.signIn(signinRequestDto);
         User finduser = userRepository.findByUsername("testuser").orElse(null);
 
         //after 유저 삭제
         userService.deleteUser(finduser, deleteRequestDto);
-
 
         // Then 토큰이 제대로 발행 되는지
         assertThat(user).isNotNull();

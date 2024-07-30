@@ -30,31 +30,41 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signUp(@Valid @RequestBody SignupRequestDto signupRequest) {
+    public ResponseEntity<SignupResponseDto> signUp(
+        @Valid @RequestBody SignupRequestDto signupRequest) {
         SignupResponseDto signupResponse = userService.signUp(signupRequest);
         return ResponseEntity.created(URI.create("/signup"))
             .body(signupResponse);
     }
+
     @PostMapping("/signin")
-    public ResponseEntity<SigninResponseDto> signIn(@Valid @RequestBody SigninRequestDto signinRequest) {
+    public ResponseEntity<SigninResponseDto> signIn(
+        @Valid @RequestBody SigninRequestDto signinRequest) {
         SigninResponseDto signinResponse = userService.signIn(signinRequest);
         return ResponseEntity.ok()
             .header(HttpHeaders.AUTHORIZATION, signinResponse.getAccessToken())
             .header("RefreshToken", signinResponse.getRefreshToken())
             .body(signinResponse);
     }
+
     @GetMapping("/info")
-    public ResponseEntity<UserResponseDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) throws AccessDeniedException {
+    public ResponseEntity<UserResponseDto> getUserInfo(
+        @AuthenticationPrincipal CustomUserDetails userDetails) throws AccessDeniedException {
         UserResponseDto userResponseDto = userService.getUserInfo(userDetails.getUser());
         return ResponseEntity.ok(userResponseDto);
     }
+
     @PutMapping("/update")
-    public ResponseEntity<String> updateUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UpdateRequestDto updateRequest) throws AccessDeniedException {
+    public ResponseEntity<String> updateUserInfo(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestBody UpdateRequestDto updateRequest) throws AccessDeniedException {
         userService.updateUserInfo(userDetails.getUser(), updateRequest);
         return ResponseEntity.ok("회원정보 수정 완료");
     }
+
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody DeleteRequestDto deleteRequest) throws AccessDeniedException {
+    public ResponseEntity<String> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestBody DeleteRequestDto deleteRequest) throws AccessDeniedException {
         userService.deleteUser(userDetails.getUser(), deleteRequest);
         return ResponseEntity.ok("회원탈퇴 완료");
     }

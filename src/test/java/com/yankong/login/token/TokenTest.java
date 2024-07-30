@@ -13,8 +13,6 @@ import com.yankong.login.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class TokenTest {
 
     @Autowired
@@ -44,11 +41,12 @@ public class TokenTest {
     @Test
     public void testTokenExpiration() {
         // Given
-        String token = "expiredToken";
-        when(jwtUtil.validateToken(token)).thenReturn(false);
+        String token = "Bearer expiredToken";
+        jwtUtil.validateToken(token);
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> refreshTokenService.refresh(token));
+        RuntimeException exception = assertThrows(RuntimeException.class,
+            () -> refreshTokenService.refresh(token));
         assertThat(exception.getMessage()).isEqualTo("Refresh Token이 유효하지 않습니다. 다시 로그인 해주세요");
     }
 
@@ -72,7 +70,6 @@ public class TokenTest {
             .build();
         userService.signUp(signupRequestDto);
 
-
         // When
         SigninResponseDto user = userService.signIn(signinRequestDto);
         User finduser = userRepository.findByUsername("testuser").orElse(null);
@@ -81,7 +78,8 @@ public class TokenTest {
         assertThat(user).isNotNull();
         System.out.println("RefreshToken ; " + user.getRefreshToken());
         System.out.println("OldAcessToken : " + user.getAccessToken());
-        System.out.println("NewAcessToken : " + userService.signIn(signinRequestDto).getAccessToken());
+        System.out.println(
+            "NewAcessToken : " + userService.signIn(signinRequestDto).getAccessToken());
         assertThat(user.getAccessToken()).isNotNull();
         assertThat(user.getRefreshToken()).isNotNull();
         userService.deleteUser(finduser, deleteRequestDto);
