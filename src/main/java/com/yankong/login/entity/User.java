@@ -1,7 +1,7 @@
 package com.yankong.login.entity;
 
-import com.yankong.login.dto.UpdateRequestDto;
-import com.yankong.login.dto.UserRequestDto;
+import com.yankong.login.dto.request.UpdateRequestDto;
+import com.yankong.login.dto.request.SignupRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +20,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -29,14 +29,17 @@ public class User {
     @Column(nullable = false)
     private String nickname;
 
-    public User(UserRequestDto userRequest, String encodedPassword) {
+    @Column(nullable = false)
+    private UserRole role = UserRole.ADMIN;
+
+    public User(SignupRequestDto userRequest, String encodedPassword) {
         this.username = userRequest.getUsername();
         this.password = encodedPassword;
         this.nickname = userRequest.getNickname();
     }
 
     public static User from(
-        UserRequestDto userRequest,
+        SignupRequestDto userRequest,
         String encodedPassword
 
     ) {

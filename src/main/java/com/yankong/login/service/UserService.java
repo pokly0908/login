@@ -1,13 +1,16 @@
 package com.yankong.login.service;
 
-import com.yankong.login.dto.DeleteRequestDto;
-import com.yankong.login.dto.UpdateRequestDto;
-import com.yankong.login.dto.UserRequestDto;
-import com.yankong.login.dto.UserResponseDto;
+import com.yankong.login.dto.request.DeleteRequestDto;
+import com.yankong.login.dto.request.SigninRequestDto;
+import com.yankong.login.dto.request.UpdateRequestDto;
+import com.yankong.login.dto.request.SignupRequestDto;
+import com.yankong.login.dto.response.SignupResponseDto;
+import com.yankong.login.dto.response.UserResponseDto;
 import com.yankong.login.entity.User;
 import com.yankong.login.global.security.jwt.JwtUtil;
 import com.yankong.login.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,17 +24,29 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void signUp(UserRequestDto userRequestDto) {
-        String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
-        User user = User.from(userRequestDto, encodedPassword);
+    public SignupResponseDto signUp(SignupRequestDto signupRequestDto) {
+        try {
+            userRepository.findByUsername(signupRequestDto.getUsername()).orElseThrow(IllegalArgumentException::new);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+        }
+        String encodedPassword = passwordEncoder.encode(signupRequestDto.getPassword());
+        User user = User.from(signupRequestDto, encodedPassword);
         userRepository.save(user);
+        return new SignupResponseDto(user);
     }
 
     @Transactional
-    public String signIn(UserRequestDto userRequestDto) {
-        User user = userRepository.findByUsername(userRequestDto.getUsername()).orElseThrow(IllegalArgumentException::new);
-        if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException();
+    public String signIn(SigninRequestDto signinRequest) {
+        User user;
+        try {
+            user = userRepository.findByUsername(signinRequest.getUsername())
+                .orElseThrow(NoSuchElementException::new);
+            if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
+                throw new NoSuchElementException();
+            }
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("아이디 또는 비밀번호가 틀렸습니다.");
         }
         return jwtUtil.createAccessToken(user.getUsername());
     }

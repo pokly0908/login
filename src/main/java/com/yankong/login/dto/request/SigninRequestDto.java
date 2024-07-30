@@ -1,14 +1,14 @@
-package com.yankong.login.dto;
+package com.yankong.login.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-public class DeleteRequestDto {
+public class SigninRequestDto {
     private String password;
+    private String username;
+
 }

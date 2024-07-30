@@ -1,9 +1,12 @@
 package com.yankong.login.controller;
 
-import com.yankong.login.dto.DeleteRequestDto;
-import com.yankong.login.dto.UpdateRequestDto;
-import com.yankong.login.dto.UserRequestDto;
-import com.yankong.login.dto.UserResponseDto;
+import com.yankong.login.dto.request.DeleteRequestDto;
+import com.yankong.login.dto.request.SigninRequestDto;
+import com.yankong.login.dto.response.SigninResponseDto;
+import com.yankong.login.dto.request.UpdateRequestDto;
+import com.yankong.login.dto.request.SignupRequestDto;
+import com.yankong.login.dto.response.SignupResponseDto;
+import com.yankong.login.dto.response.UserResponseDto;
 import com.yankong.login.global.security.CustomUserDetails;
 import com.yankong.login.service.UserService;
 import jakarta.validation.Valid;
@@ -27,15 +30,17 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@Valid @RequestBody UserRequestDto userRequestDto) {
-        userService.signUp(userRequestDto);
-        System.out.println("회원가입 완료");
-        return ResponseEntity.created(URI.create("/signup")).build();
+    public ResponseEntity<SignupResponseDto> signUp(@Valid @RequestBody SignupRequestDto signupRequest) {
+        SignupResponseDto signupResponse = userService.signUp(signupRequest);
+        return ResponseEntity.created(URI.create("/signup"))
+            .body(signupResponse);
     }
     @PostMapping("/signin")
-    public ResponseEntity<String> signIn(@Valid @RequestBody UserRequestDto userRequestDto) {
-        String accessToken = userService.signIn(userRequestDto);
-        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, accessToken).build();
+    public ResponseEntity<SigninResponseDto> signIn(@Valid @RequestBody SigninRequestDto signinRequest) {
+        String accessToken = userService.signIn(signinRequest);
+        return ResponseEntity.ok()
+            .header(HttpHeaders.AUTHORIZATION, accessToken)
+            .body(new SigninResponseDto(accessToken));
     }
     @GetMapping("/info")
     public ResponseEntity<UserResponseDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) throws AccessDeniedException {
