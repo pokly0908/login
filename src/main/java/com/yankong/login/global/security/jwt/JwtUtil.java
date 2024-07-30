@@ -6,11 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.security.Key;
-import java.security.SignatureException;
 import java.util.Base64;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +26,7 @@ public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
     private final long ACCESS_TOKEN_TIME = 1000L * 60 * 60;
+    private final long REFRESH_TOKEN_TIME = 1000L * 60 * 60 * 24 * 7;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @Value("${jwt.secret.key}")
@@ -37,6 +38,7 @@ public class JwtUtil {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         key = Keys.hmacShaKeyFor(bytes);
     }
+
     // 토큰 생성
     public String createAccessToken(String username) {
         Date date = new Date();
@@ -46,6 +48,19 @@ public class JwtUtil {
                 .setSubject(username) //사용자 식별자값(ID)
                 .claim("username", username)
                 .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
+    }
+
+    public String createRefreshToken(String username) {
+        Date date = new Date();
+
+        return BEARER_PREFIX +
+            Jwts.builder()
+                .setSubject(username) //사용자 식별자값(ID)
+                .claim("username", username)
+                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_TIME)) // 만료 시간
                 .setIssuedAt(date) // 발급일
                 .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                 .compact();
@@ -65,7 +80,7 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
+        } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 만료된 JWT token 입니다.");

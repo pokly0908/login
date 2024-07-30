@@ -4,10 +4,13 @@ import lombok.Getter;
 
 @Getter
 public class SigninResponseDto {
-    private String token;
 
-    public SigninResponseDto(String token) {
-        this.token = token;
+    private String accessToken;
+    private String refreshToken;
+
+    public SigninResponseDto(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
 

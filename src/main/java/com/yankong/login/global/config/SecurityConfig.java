@@ -25,7 +25,8 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService, CustomAccessDeniedHandler accessDeniedHandler) {
+    public SecurityConfig(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService,
+        CustomAccessDeniedHandler accessDeniedHandler) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.accessDeniedHandler = accessDeniedHandler;
@@ -44,7 +45,8 @@ public class SecurityConfig {
             .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                 .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated())
-            .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedHandler(accessDeniedHandler))
+            .exceptionHandling(
+                (exceptionHandling) -> exceptionHandling.accessDeniedHandler(accessDeniedHandler))
             .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(
                 SessionCreationPolicy.STATELESS))
             .userDetailsService(userDetailsService)
