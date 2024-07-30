@@ -1,4 +1,4 @@
-package com.yankong.login.dto;
+package com.yankong.login.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
